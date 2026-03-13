@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Clientes\Pages;
 
 use App\Filament\Resources\Clientes\ClientesResource;
+use App\Filament\Resources\Clientes\Widgets\ClienteStats;
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
 
@@ -14,6 +15,13 @@ class ListClientes extends ListRecords
     {
         return [
             CreateAction::make(),
+        ];
+    }
+
+    protected function getHeaderWidgets(): array
+    {
+        return [
+           ClienteStats::class,
         ];
     }
 }

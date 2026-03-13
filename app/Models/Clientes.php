@@ -10,6 +10,7 @@ class Clientes extends Model
         'nombre',
         'apellidos',
         'edad',
-        'ciudad'
+        'ciudad',
+        'tipo',
     ];
 }

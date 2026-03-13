@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Clientes\Schemas;
 
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Schema;
 
@@ -20,6 +21,13 @@ class ClientesForm
                     ->numeric(),
                 TextInput::make('ciudad')
                     ->required(),
+                Select::make('tipo')
+                ->label("tipo de registro")
+                ->options( ['cliente' => 'Cliente','prospecto' => 'Prospecto',])
+                ->required()
+                ->default('prospecto')
+                
+                
             ]);
     }
 }

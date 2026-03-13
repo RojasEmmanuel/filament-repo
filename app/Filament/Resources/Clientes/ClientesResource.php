@@ -7,6 +7,7 @@ use App\Filament\Resources\Clientes\Pages\EditClientes;
 use App\Filament\Resources\Clientes\Pages\ListClientes;
 use App\Filament\Resources\Clientes\Schemas\ClientesForm;
 use App\Filament\Resources\Clientes\Tables\ClientesTable;
+use App\Filament\Resources\Clientes\Widgets\ClienteStats;
 use App\Models\Clientes;
 use BackedEnum;
 use Filament\Resources\Resource;
@@ -45,6 +46,13 @@ class ClientesResource extends Resource
             'index' => ListClientes::route('/'),
             'create' => CreateClientes::route('/create'),
             'edit' => EditClientes::route('/{record}/edit'),
+        ];
+    }
+
+    public static function getWidgets(): array
+    {
+        return [
+            ClienteStats::class, // 👈 Registra el widget
         ];
     }
 }

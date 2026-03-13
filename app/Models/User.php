@@ -7,11 +7,13 @@ use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Jeffgreco13\FilamentBreezy\Traits\TwoFactorAuthenticatable;
 
 class User extends Authenticatable
 {
     /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
+    use TwoFactorAuthenticatable;
 
     /**
      * The attributes that are mass assignable.
@@ -22,7 +24,17 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'avatar',
+        'telefono',
+        'rol',
     ];
+
+    public function getFilamentAvatarUrl(): ?string
+    {
+        return $this->avatar
+            ? asset('storage/' . $this->avatar)
+            : null;
+    }
 
     /**
      * The attributes that should be hidden for serialization.

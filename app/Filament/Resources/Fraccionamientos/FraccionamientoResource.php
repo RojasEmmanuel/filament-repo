@@ -18,7 +18,7 @@ class FraccionamientoResource extends Resource
 {
     protected static ?string $model = Fraccionamiento::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedMap;
 
     protected static ?string $recordTitleAttribute = 'fraccionamiento';
 

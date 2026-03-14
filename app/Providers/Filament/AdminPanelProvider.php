@@ -31,11 +31,13 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('admin')
             ->login()
+            ->passwordReset()
             ->plugin(
                 BreezyCore::make()
                     ->myProfile(false, true)
                     
             )
+            ->brandName('Yelao')
             ->colors([
                 'primary' => Color::Amber,
             ])

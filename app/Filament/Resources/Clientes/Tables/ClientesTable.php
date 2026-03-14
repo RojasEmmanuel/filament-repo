@@ -3,8 +3,12 @@
 namespace App\Filament\Resources\Clientes\Tables;
 
 use Filament\Actions\BulkActionGroup;
+use Filament\Actions\CreateAction;
+use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
+use Filament\Actions\ViewAction;
+use Filament\Schemas\Components\Actions;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
@@ -49,15 +53,25 @@ class ClientesTable
                 
             ])
             ->filters([
-                //
+                
             ])
             ->recordActions([
                 EditAction::make(),
+                DeleteAction::make()
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
                 ]),
+            ])
+            
+            ->actions([
+                // 👇 Acción de editar en modal
+                EditAction::make(),
+               
+                
+                DeleteAction::make(),
             ]);
+
     }
 }

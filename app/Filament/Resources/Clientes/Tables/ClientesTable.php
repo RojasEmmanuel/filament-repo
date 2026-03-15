@@ -11,6 +11,7 @@ use Filament\Actions\ViewAction;
 use Filament\Schemas\Components\Actions;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 
 class ClientesTable
@@ -53,6 +54,13 @@ class ClientesTable
                 
             ])
             ->filters([
+                SelectFilter::make('tipo')
+                ->label('Tipo de registro')
+                ->options([
+                    'cliente'=>'Clientes',
+                    'prospecto'=>'Prospectos'
+                ])
+                ->placeholder('Todos los tipos')
                 
             ])
             ->recordActions([

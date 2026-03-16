@@ -10,13 +10,12 @@ use Illuminate\Auth\Passwords\CanResetPassword as CanResetPasswordTrait;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Jeffgreco13\FilamentBreezy\Traits\TwoFactorAuthenticatable;
+use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
 {
     /** @use HasFactory<UserFactory> */
-    use HasFactory, Notifiable, CanResetPasswordTrait;
-    use TwoFactorAuthenticatable;
+    use HasFactory, Notifiable, CanResetPasswordTrait, HasRoles;
 
     /**
      * The attributes that are mass assignable.
@@ -27,9 +26,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
-        'avatar',
         'telefono',
-        'rol',
     ];
 
     public function getFilamentAvatarUrl(): ?string

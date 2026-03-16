@@ -2,11 +2,13 @@
 
 namespace App\Filament\Resources\Clientes\Tables;
 
+use App\Filament\Exports\ClientesExporter;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\CreateAction;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
+use Filament\Actions\ExportBulkAction;
 use Filament\Actions\ViewAction;
 use Filament\Schemas\Components\Actions;
 use Filament\Support\Icons\Heroicon;
@@ -71,6 +73,8 @@ class ClientesTable
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
                 ]),
+
+                ExportBulkAction::make()->exporter(ClientesExporter::class)
             ])
             
             ->actions([

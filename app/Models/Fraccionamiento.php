@@ -18,4 +18,9 @@ class Fraccionamiento extends Model
         'activo',
         'imagen'
     ];
+
+    public function lotes()
+    {
+        return $this->hasMany(Lotes::class);
+    }
 }

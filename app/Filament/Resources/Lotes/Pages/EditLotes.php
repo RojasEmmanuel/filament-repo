@@ -1,14 +1,14 @@
 <?php
 
-namespace App\Filament\Resources\Products\Pages;
+namespace App\Filament\Resources\Lotes\Pages;
 
-use App\Filament\Resources\Products\ProductResource;
+use App\Filament\Resources\Lotes\LotesResource;
 use Filament\Actions\DeleteAction;
 use Filament\Resources\Pages\EditRecord;
 
-class EditProduct extends EditRecord
+class EditLotes extends EditRecord
 {
-    protected static string $resource = ProductResource::class;
+    protected static string $resource = LotesResource::class;
 
     protected function getHeaderActions(): array
     {

@@ -41,10 +41,7 @@ class AdminPanelProvider extends PanelProvider
             ->plugins([
                 FilamentShieldPlugin::make(),
             ])
-            
-            ->brandLogo(asset('images/logo.png'))
-            ->brandName('SAI')
-            ->brandLogoHeight('3rem')
+     
             ->colors([
                 'primary' => Color::Amber,
             ])

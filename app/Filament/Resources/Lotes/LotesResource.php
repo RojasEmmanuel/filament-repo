@@ -7,6 +7,8 @@ use App\Filament\Resources\Lotes\Pages\EditLotes;
 use App\Filament\Resources\Lotes\Pages\ListLotes;
 use App\Filament\Resources\Lotes\Schemas\LotesForm;
 use App\Filament\Resources\Lotes\Tables\LotesTable;
+use App\Filament\Resources\LotesResource\Widgets\LotesChart;
+use App\Filament\Resources\LotesResource\Widgets\StatsOverview;
 use App\Models\Lotes;
 use BackedEnum;
 use Filament\Resources\Resource;
@@ -43,8 +45,16 @@ class LotesResource extends Resource
     {
         return [
             'index' => ListLotes::route('/'),
-            'create' => CreateLotes::route('/create'),
-            'edit' => EditLotes::route('/{record}/edit'),
+            //'create' => CreateLotes::route('/create'),
+            //'edit' => EditLotes::route('/{record}/edit'),
+        ];
+    }
+
+    public static function getWidgets(): array
+    {
+        return [
+            StatsOverview::class,
+            LotesChart::class
         ];
     }
 }

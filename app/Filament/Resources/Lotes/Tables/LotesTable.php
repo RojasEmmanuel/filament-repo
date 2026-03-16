@@ -44,7 +44,13 @@ class LotesTable
                     ->numeric()
                     ->sortable(),
                 TextColumn::make('estatus')
-                    ->badge(),
+                    ->badge()
+                    ->color(fn (string $state): string => match ($state) {
+                        'disponible' => 'success',
+                        'vendido' => 'warning',
+                        'liquidado'=>'danger'
+                    })
+                    ,
                 TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()

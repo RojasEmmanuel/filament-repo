@@ -20,13 +20,21 @@ class LotesImporter extends Importer
     {
         return [
             ImportColumn::make('fraccionamiento')
-                ->label('Fraccionamiento (ID)')
-                ->relationship('fraccionamiento', 'id')
-                ->rules(['required', 'integer'])
-                ->example('8')
-                ->numeric()                          // ← fuerza validación numérica
-                ->castStateUsing(fn ($state) => (int) $state)  // ← convierte explícitamente a integer
-                ->requiredMapping(),
+                ->label('Fraccionamiento')
+                ->relationship(resolveUsing: 'id')
+                ->rules(['required', 'exists:fraccionamientos,id'])
+                ->castStateUsing(function ($state) {
+                    // Limpiar el valor (eliminar espacios, etc.)
+                    $state = trim($state);
+                    
+                    // Verificar que sea un número válido
+                    if (!is_numeric($state)) {
+                        throw new \Exception("El valor '{$state}' no es un ID válido de fraccionamiento");
+                    }
+                    
+                    return (int) $state;
+                }),
+                
             ImportColumn::make('manzana')
                 ->label('Manzana')
                 ->rules(['required', 'string', 'max:20'])
@@ -39,29 +47,35 @@ class LotesImporter extends Importer
 
             ImportColumn::make('area')
                 ->label('Área (m²)')
-                ->numeric(10,2)
+                ->castStateUsing(function ($state) {
+                    // Convertir coma decimal a punto
+                    return str_replace(',', '.', $state);
+                })
                 ->rules(['required', 'numeric', 'min:0'])
                 ->requiredMapping(),
 
             ImportColumn::make('norte')
-                ->numeric(10,2)
+                ->castStateUsing(fn ($state) => $state ? str_replace(',', '.', $state) : null)
                 ->rules(['nullable', 'numeric', 'min:0']),
 
             ImportColumn::make('sur')
-                ->numeric(10,2)
+                ->castStateUsing(fn ($state) => $state ? str_replace(',', '.', $state) : null)
                 ->rules(['nullable', 'numeric', 'min:0']),
 
             ImportColumn::make('este')
-                ->numeric(10,2)
+                ->castStateUsing(fn ($state) => $state ? str_replace(',', '.', $state) : null)
                 ->rules(['nullable', 'numeric', 'min:0']),
 
             ImportColumn::make('oeste')
-                ->numeric(10,2)
+                ->castStateUsing(fn ($state) => $state ? str_replace(',', '.', $state) : null)
                 ->rules(['nullable', 'numeric', 'min:0']),
 
             ImportColumn::make('precio')
                 ->label('Precio')
-                ->numeric(10,2)
+                ->castStateUsing(function ($state) {
+                    // Convertir coma decimal a punto
+                    return str_replace(',', '.', $state);
+                })
                 ->rules(['required', 'numeric', 'min:0'])
                 ->requiredMapping(),
 
@@ -80,16 +94,35 @@ class LotesImporter extends Importer
 
     public function resolveRecord(): ?Lotes
     {
-        // Agregamos chequeo rápido para depurar
-        if (empty($this->data['fraccionamiento_id'])) {
-            throw new \Exception("No se encontró fraccionamiento para el valor: " . ($this->data['fraccionamiento'] ?? 'vacío'));
+        // Verificar que existe el fraccionamiento
+        $fraccionamientoId = $this->data['fraccionamiento'] ?? null;
+        
+        if (empty($fraccionamientoId)) {
+            throw new \Exception("No se proporcionó un ID de fraccionamiento");
         }
-
+        
+        // Verificar que el fraccionamiento existe
+        $fraccionamiento = Fraccionamiento::find($fraccionamientoId);
+        if (!$fraccionamiento) {
+            throw new \Exception("No existe fraccionamiento con ID: {$fraccionamientoId}");
+        }
+        
         return Lotes::firstOrNew([
-            'fraccionamiento_id' => $this->data['fraccionamiento_id'],
-            'manzana'            => $this->data['manzana'],
-            'lote'               => $this->data['lote'],
+            'fraccionamiento_id' => $fraccionamientoId,
+            'manzana' => $this->data['manzana'],
+            'lote' => $this->data['lote'],
         ]);
+    }
+
+    public function mutateBeforeCreate(array $data): array
+    {
+        // Asegurar que el fraccionamiento_id esté correctamente mapeado
+        if (isset($data['fraccionamiento'])) {
+            $data['fraccionamiento_id'] = $data['fraccionamiento'];
+            unset($data['fraccionamiento']);
+        }
+        
+        return $data;
     }
 
     public static function getCompletedNotificationBody(Import $import): string

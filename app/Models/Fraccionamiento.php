@@ -10,6 +10,11 @@ class Fraccionamiento extends Model
         'nombre',
         'ubicacion',    
         'descripcion',
+        'codigo_postal',
+        'perimetro',
+        'area_total',
+        'total_manzanas',
+        'total_lotes',
         'activo',
         'imagen'
     ];

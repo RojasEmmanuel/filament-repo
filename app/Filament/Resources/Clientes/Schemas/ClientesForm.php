@@ -118,44 +118,11 @@ class ClientesForm
                                     ]),
                             ]),
 
-                        // TAB 5: RESUMEN DEL REGISTRO
-                        Tabs\Tab::make('Resumen')
-                            ->icon('heroicon-o-eye')
-                            ->schema([
-                                Placeholder::make('resumen_nombre_completo')
-                                    ->label('Nombre Completo')
-                                    ->content(function ($get) {
-                                        $nombre = $get('nombre') ?? '[Nombre]';
-                                        $apellidos = $get('apellidos') ?? '[Apellidos]';
-                                        return $nombre . ' ' . $apellidos;
-                                    }),
-                                    
-                                Placeholder::make('resumen_tipo')
-                                    ->label('Tipo de Registro')
-                                    ->content(function ($get) {
-                                        $tipo = $get('tipo') ?? 'prospecto';
-                                        return $tipo === 'cliente' ? 'Cliente' : 'Prospecto';
-                                    }),
-                                    
-                                Placeholder::make('resumen_contacto')
-                                    ->label('Contacto')
-                                    ->content(function ($get) {
-                                        $telefono = $get('telefono') ?: 'No registrado';
-                                        $ciudad = $get('ciudad') ?? 'No especificada';
-                                        return $telefono . ' | ' . $ciudad;
-                                    }),
-                                    
-                                Placeholder::make('resumen_fiscal')
-                                    ->label('Datos Fiscales')
-                                    ->content(function ($get) {
-                                        $curp = $get('curp') ?: 'No registrado';
-                                        $rfc = $get('rfc') ?: 'No registrado';
-                                        return 'CURP: ' . $curp . ' | RFC: ' . $rfc;
-                                    }),
-                            ]),
-                    ])
-                    ->persistTabInQueryString()
-                    ->columnSpanFull(),
+                        
+                    ])->persistTabInQueryString() // Opcional: guarda la pestaña activa en la URL
+                    ->columnSpanFull()
+                    ->vertical() // Esto asegura que ocupe todo el ancho disponible
+                    
             ]);
     }
 }

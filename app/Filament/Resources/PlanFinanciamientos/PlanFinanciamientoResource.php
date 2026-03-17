@@ -19,7 +19,7 @@ class PlanFinanciamientoResource extends Resource
 {
     protected static ?string $model = PlanFinanciamiento::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedDocumentCheck;
     protected static ?string $label = 'Planes de Financiamiento';
     protected static string|UnitEnum|null $navigationGroup = 'Configuración';
     protected static ?int $navigationSort = 6;

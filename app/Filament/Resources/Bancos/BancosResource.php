@@ -45,8 +45,8 @@ class BancosResource extends Resource
     {
         return [
             'index' => ListBancos::route('/'),
-            //'create' => CreateBancos::route('/create'),
-            //'edit' => EditBancos::route('/{record}/edit'),
+            'create' => CreateBancos::route('/create'),
+            'edit' => EditBancos::route('/{record}/edit'),
         ];
     }
 }

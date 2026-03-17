@@ -48,8 +48,8 @@ class LotesResource extends Resource
     {
         return [
             'index' => ListLotes::route('/'),
-            //'create' => CreateLotes::route('/create'),
-            //h'edit' => EditLotes::route('/{record}/edit'),
+            'create' => CreateLotes::route('/create'),
+            'edit' => EditLotes::route('/{record}/edit'),
         ];
     }
 

@@ -69,6 +69,7 @@ class UsersTable
             ->filters([
                 SelectFilter::make('roles')
                     ->label('Rol')
+                    ->native(false)
                     ->relationship('roles', 'name')
             ])
             ->recordActions([

@@ -21,9 +21,8 @@ class MonedasResource extends Resource
     protected static ?string $model = Monedas::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedCurrencyDollar;
-    protected static string|UnitEnum|null $navigationGroup = 'Finanzas';
+    protected static string|UnitEnum|null $navigationGroup = 'Configuración';
     protected static ?string $recordTitleAttribute = 'Monedas';
-    protected static ?string $cluster = ConfiguraciónCluster::class;
 
 
     protected static ?int $navigationSort=6;

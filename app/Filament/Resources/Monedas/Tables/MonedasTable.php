@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Resources\Bancos\Tables;
+namespace App\Filament\Resources\Monedas\Tables;
 
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
@@ -8,25 +8,17 @@ use Filament\Actions\EditAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 
-class BancosTable
+class MonedasTable
 {
     public static function configure(Table $table): Table
     {
         return $table
             ->columns([
-                TextColumn::make('nombre_banco')
-                    ->searchable() 
-                    ->sortable(),
-                TextColumn::make('tipo_cuenta')
-                    ->badge(),
-                TextColumn::make('moneda')
-                    ->searchable()
-                    ->sortable(),
-                TextColumn::make('numero_cuenta')
+                TextColumn::make('nombre')
                     ->searchable(),
-                TextColumn::make('codigo_interbancario')
+                TextColumn::make('codigo_iso')
                     ->searchable(),
-                TextColumn::make('representante')
+                TextColumn::make('Simbolo')
                     ->searchable(),
                 TextColumn::make('created_at')
                     ->dateTime()

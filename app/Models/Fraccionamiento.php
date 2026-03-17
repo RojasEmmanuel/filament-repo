@@ -23,4 +23,14 @@ class Fraccionamiento extends Model
     {
         return $this->hasMany(Lotes::class);
     }
+
+    public function bancos()
+    {
+        return $this->belongsToMany(
+            Bancos::class,
+            'banco_fraccionamiento',
+            'fraccionamiento_id',
+            'banco_id'
+        );
+    }
 }

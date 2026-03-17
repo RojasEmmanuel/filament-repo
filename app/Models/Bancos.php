@@ -16,4 +16,19 @@ class Bancos extends Model
         'codigo_interbancario',
         'representante',
     ];
+
+    public function moneda()
+    {
+        return $this->belongsTo(Monedas::class, 'moneda');
+    }
+
+    public function fraccionamientos()
+    {
+        return $this->belongsToMany(
+            Fraccionamiento::class,
+            'banco_fraccionamiento',
+            'banco_id',
+            'fraccionamiento_id'
+        );
+    }
 }

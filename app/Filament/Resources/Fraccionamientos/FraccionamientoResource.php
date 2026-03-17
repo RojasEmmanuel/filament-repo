@@ -6,6 +6,7 @@ use App\Filament\Clusters\Inmobiliaria\InmobiliariaCluster;
 use App\Filament\Resources\Fraccionamientos\Pages\CreateFraccionamiento;
 use App\Filament\Resources\Fraccionamientos\Pages\EditFraccionamiento;
 use App\Filament\Resources\Fraccionamientos\Pages\ListFraccionamientos;
+use App\Filament\Resources\Fraccionamientos\RelationManagers\BancosRelationManager;
 use App\Filament\Resources\Fraccionamientos\RelationManagers\LotesRelationManager;
 use App\Filament\Resources\Fraccionamientos\Schemas\FraccionamientoForm;
 use App\Filament\Resources\Fraccionamientos\Tables\FraccionamientosTable;
@@ -39,6 +40,7 @@ class FraccionamientoResource extends Resource
     public static function getRelations(): array
     {
         return [
+            BancosRelationManager::class,
             LotesRelationManager::class,
         ];
     }

@@ -2,9 +2,11 @@
 
 namespace App\Filament\Resources\Fraccionamientos;
 
+use App\Filament\Clusters\Inmobiliaria\InmobiliariaCluster;
 use App\Filament\Resources\Fraccionamientos\Pages\CreateFraccionamiento;
 use App\Filament\Resources\Fraccionamientos\Pages\EditFraccionamiento;
 use App\Filament\Resources\Fraccionamientos\Pages\ListFraccionamientos;
+use App\Filament\Resources\Fraccionamientos\RelationManagers\LotesRelationManager;
 use App\Filament\Resources\Fraccionamientos\Schemas\FraccionamientoForm;
 use App\Filament\Resources\Fraccionamientos\Tables\FraccionamientosTable;
 use App\Models\Fraccionamiento;
@@ -21,7 +23,9 @@ class FraccionamientoResource extends Resource
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedMap;
 
     protected static ?string $recordTitleAttribute = 'fraccionamiento';
+    protected static ?int $navigationSort = 1;
 
+    
     public static function form(Schema $schema): Schema
     {
         return FraccionamientoForm::configure($schema);
@@ -35,7 +39,7 @@ class FraccionamientoResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            LotesRelationManager::class,
         ];
     }
 

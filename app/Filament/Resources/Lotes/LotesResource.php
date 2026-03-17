@@ -23,6 +23,7 @@ class LotesResource extends Resource
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedSquares2x2;
 
     protected static ?string $recordTitleAttribute = 'Lotes';
+    protected static ?int $navigationSort=2;
 
     public static function form(Schema $schema): Schema
     {
@@ -46,7 +47,7 @@ class LotesResource extends Resource
         return [
             'index' => ListLotes::route('/'),
             //'create' => CreateLotes::route('/create'),
-            //'edit' => EditLotes::route('/{record}/edit'),
+            //h'edit' => EditLotes::route('/{record}/edit'),
         ];
     }
 

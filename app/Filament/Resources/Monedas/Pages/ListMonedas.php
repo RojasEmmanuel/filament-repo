@@ -16,4 +16,9 @@ class ListMonedas extends ListRecords
             CreateAction::make(),
         ];
     }
+
+    protected function getHeaderDescription(): ?string
+    {
+        return 'Actualmente tienes ' . \App\Models\Monedas::count() . ' monedas registradas.';
+    }
 }

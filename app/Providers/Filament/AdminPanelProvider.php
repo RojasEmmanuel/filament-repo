@@ -22,6 +22,7 @@ use Illuminate\View\Middleware\ShareErrorsFromSession;
 
 use Jeffgreco13\FilamentBreezy\BreezyCore;
 use App\Filament\Breezy\MyProfile;
+use App\Filament\Clusters\Configuración\ConfiguraciónCluster;
 
 class AdminPanelProvider extends PanelProvider
 {
@@ -33,13 +34,17 @@ class AdminPanelProvider extends PanelProvider
             ->path('admin')
             ->login()
             ->passwordReset()
+            ->navigationGroups([
+                'Atención al Cliente'
+            ])
             ->plugin(
                 BreezyCore::make()
                     ->myProfile(false, true)
                     
             )
             ->plugins([
-                FilamentShieldPlugin::make(),
+                FilamentShieldPlugin::make()
+              
             ])
      
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')

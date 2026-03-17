@@ -20,11 +20,17 @@ class UserForm
                     ->label('Email address')
                     ->email()
                     ->required(),
-                DateTimePicker::make('email_verified_at'),
-                TextInput::make('password')
-                    ->password()
+                
+                TextInput::make('telefono')
+                    ->label('Teléfono')
+                    ->tel()
                     ->required(),
                 
+                TextInput::make('password')
+                    ->password()
+                    ->required(fn (string $operation) => $operation === 'create')
+                    ->label('Contraseña'),                   
+
                 Select::make('roles')
                     ->relationship('roles', 'name')
                     ->multiple()

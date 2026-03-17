@@ -21,7 +21,8 @@ class BancosResource extends Resource
     protected static ?string $model = Bancos::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedBanknotes;
-    protected static string|UnitEnum|null $navigationGroup = 'Configuración';
+    protected static string|UnitEnum|null $navigationGroup = 'Finanzas';
+    protected static ?string $cluster = ConfiguraciónCluster::class;
     protected static ?string $recordTitleAttribute = 'Bancos';
     protected static ?int $navigationSort = 5;
     public static function form(Schema $schema): Schema

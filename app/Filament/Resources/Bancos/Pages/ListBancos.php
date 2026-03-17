@@ -16,4 +16,9 @@ class ListBancos extends ListRecords
             CreateAction::make(),
         ];
     }
+
+    public function getHeaderDescription(): ?string
+    {
+        return 'Actualmente tienes ' . \App\Models\Bancos::count() . ' bancos registrados.';
+    }
 }

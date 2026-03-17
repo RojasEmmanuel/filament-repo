@@ -23,7 +23,7 @@ class FraccionamientoResource extends Resource
     protected static ?string $model = Fraccionamiento::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedMap;
-    protected static string|UnitEnum|null $navigationGroup = 'Proyectos';
+    protected static string|UnitEnum|null $navigationGroup = 'Atención al Cliente';
     
     protected static ?string $recordTitleAttribute = 'fraccionamiento';
     protected static ?int $navigationSort = 1;

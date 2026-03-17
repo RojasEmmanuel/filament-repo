@@ -27,6 +27,7 @@ class User extends Authenticatable
         'email',
         'password',
         'telefono',
+        'avatar',
     ];
 
     public function getFilamentAvatarUrl(): ?string

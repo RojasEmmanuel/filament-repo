@@ -18,8 +18,11 @@ class BancosForm
                     ->options(['ahorros' => 'Ahorros', 'corriente' => 'Corriente', 'recaudadora' => 'Recaudadora'])
                     ->default('corriente')
                     ->required(),
-                TextInput::make('moneda')
-                    ->required(),
+                Select::make('moneda_id')
+                    ->relationship('moneda', 'nombre') // nombre = campo visible en tabla monedas
+                    ->required()
+                    ->searchable()
+                    ->preload(),
                 TextInput::make('numero_cuenta')
                     ->required(),
                 TextInput::make('codigo_interbancario')

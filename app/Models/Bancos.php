@@ -11,7 +11,6 @@ class Bancos extends Model
     protected $fillable = [
         'nombre_banco',
         'tipo_cuenta',
-        'moneda',
         'numero_cuenta',
         'codigo_interbancario',
         'representante',
@@ -19,7 +18,7 @@ class Bancos extends Model
 
     public function moneda()
     {
-        return $this->belongsTo(Monedas::class, 'moneda');
+        return $this->belongsTo(Monedas::class, 'moneda_id');
     }
 
     public function fraccionamientos()

@@ -19,7 +19,8 @@ class BancosTable
                     ->sortable(),
                 TextColumn::make('tipo_cuenta')
                     ->badge(),
-                TextColumn::make('moneda')
+                TextColumn::make('moneda.nombre')
+                    ->label('Moneda')
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('numero_cuenta')

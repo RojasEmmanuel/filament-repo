@@ -16,13 +16,15 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
+use UnitEnum;
 
 class FraccionamientoResource extends Resource
 {
     protected static ?string $model = Fraccionamiento::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedMap;
-
+    protected static string|UnitEnum|null $navigationGroup = 'Proyectos';
+    
     protected static ?string $recordTitleAttribute = 'fraccionamiento';
     protected static ?int $navigationSort = 1;
 

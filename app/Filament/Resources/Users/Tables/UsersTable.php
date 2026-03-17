@@ -26,11 +26,13 @@ class UsersTable
                 TextColumn::make('created_at')
                     ->label('Creado')
                     ->dateTime()
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('updated_at')
                     ->label('Ultima Actualización')
                     ->dateTime()
-                    ->sortable(),                
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),                
                 
                 TextColumn::make('roles.name')
                     ->label('Roles')

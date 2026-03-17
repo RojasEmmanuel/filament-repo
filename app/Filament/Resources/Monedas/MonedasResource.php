@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Monedas;
 
+use App\Filament\Clusters\Configuración\ConfiguraciónCluster;
 use App\Filament\Resources\Monedas\Pages\CreateMonedas;
 use App\Filament\Resources\Monedas\Pages\EditMonedas;
 use App\Filament\Resources\Monedas\Pages\ListMonedas;
@@ -13,14 +14,16 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
+use UnitEnum;
 
 class MonedasResource extends Resource
 {
     protected static ?string $model = Monedas::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedCurrencyDollar;
-
+    protected static string|UnitEnum|null $navigationGroup = 'Configuración';
     protected static ?string $recordTitleAttribute = 'Monedas';
+
 
     protected static ?int $navigationSort=6;
     public static function form(Schema $schema): Schema
@@ -44,8 +47,8 @@ class MonedasResource extends Resource
     {
         return [
             'index' => ListMonedas::route('/'),
-            'create' => CreateMonedas::route('/create'),
-            'edit' => EditMonedas::route('/{record}/edit'),
+            //'create' => CreateMonedas::route('/create'),
+            //'edit' => EditMonedas::route('/{record}/edit'),
         ];
     }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Bancos;
 
+use App\Filament\Clusters\Configuración\ConfiguraciónCluster;
 use App\Filament\Resources\Bancos\Pages\CreateBancos;
 use App\Filament\Resources\Bancos\Pages\EditBancos;
 use App\Filament\Resources\Bancos\Pages\ListBancos;
@@ -13,13 +14,14 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
+use UnitEnum;
 
 class BancosResource extends Resource
 {
     protected static ?string $model = Bancos::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedBanknotes;
-
+    protected static string|UnitEnum|null $navigationGroup = 'Configuración';
     protected static ?string $recordTitleAttribute = 'Bancos';
     protected static ?int $navigationSort = 5;
     public static function form(Schema $schema): Schema

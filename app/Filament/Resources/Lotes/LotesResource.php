@@ -15,13 +15,15 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
+use UnitEnum;
 
 class LotesResource extends Resource
 {
     protected static ?string $model = Lotes::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedSquares2x2;
-
+    protected static string|UnitEnum|null $navigationGroup = 'Proyectos';
+    
     protected static ?string $recordTitleAttribute = 'Lotes';
     protected static ?int $navigationSort=2;
 

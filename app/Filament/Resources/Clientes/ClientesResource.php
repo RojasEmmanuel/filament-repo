@@ -14,6 +14,7 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
+use UnitEnum;
 
 class ClientesResource extends Resource
 {
@@ -22,7 +23,7 @@ class ClientesResource extends Resource
     
     protected static ?string $recordTitleAttribute = 'Clientes';
     protected static ?int $navigationSort=3;
-
+    protected static string|UnitEnum|null $navigationGroup = 'Atención al Cliente';
     public static function form(Schema $schema): Schema
     {
         return ClientesForm::configure($schema);

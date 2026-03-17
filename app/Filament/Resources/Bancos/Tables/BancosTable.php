@@ -26,7 +26,8 @@ class BancosTable
                 TextColumn::make('numero_cuenta')
                     ->searchable(),
                 TextColumn::make('codigo_interbancario')
-                    ->searchable(),
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('representante')
                     ->searchable(),
                 TextColumn::make('created_at')

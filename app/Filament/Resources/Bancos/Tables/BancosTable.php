@@ -195,7 +195,6 @@ class BancosTable
             ->emptyStateHeading('No hay bancos registrados')
             ->emptyStateDescription('Agrega tu primer banco para comenzar a gestionar cuentas.')
             ->defaultSort('nombre_banco', 'asc')
-            ->striped()
             ->deferLoading()
             ->persistFiltersInSession()
             ->persistSearchInSession()

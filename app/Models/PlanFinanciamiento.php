@@ -25,4 +25,9 @@ class PlanFinanciamiento extends Model
         'dias_gracia',
         'activo'
     ];
+
+    public function ventas()
+    {
+        return $this->hasMany(Ventas::class);
+    }
 }

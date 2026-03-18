@@ -31,4 +31,9 @@ class Clientes extends Model
             }
         });
     }
+
+    public function ventas()
+    {
+        return $this->hasMany(Ventas::class);
+    }
 }

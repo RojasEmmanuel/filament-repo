@@ -33,4 +33,9 @@ class Fraccionamiento extends Model
             'banco_id'
         );
     }
+
+    public function ventas()
+    {
+        return $this->hasMany(Ventas::class);
+    }
 }

@@ -3,9 +3,11 @@
 namespace App\Filament\Exports;
 
 use App\Models\Clientes;
+use Filament\Actions\Action;
 use Filament\Actions\Exports\ExportColumn;
 use Filament\Actions\Exports\Exporter;
 use Filament\Actions\Exports\Models\Export;
+use Filament\Notifications\Notification;
 use Illuminate\Support\Number;
 
 class ClientesExporter extends Exporter
@@ -42,5 +44,34 @@ class ClientesExporter extends Exporter
         }
 
         return $body;
+    }
+
+    // Este método se ejecuta cuando la exportación termina
+    protected function afterExport(Export $export): void
+    {
+        // Notificar al usuario que inició la exportación
+        Notification::make()
+            ->title('Exportación completada')
+            ->body("Se exportaron {$export->successful_rows} filas correctamente")
+            ->success()
+            ->sendToDatabase($export->user); // ✅ Envía al campanario
+    }
+
+    public static function getCompletedNotification(): ?Notification
+    {
+        return Notification::make()
+            ->title('Exportación finalizada')
+            ->body('Tu archivo está listo para descargar')
+            ->success()
+            ->actions([
+                Action::make('download_csv')
+                    ->label('Descargar CSV')
+                    ->button()
+                    ->url(fn (Export $record) => route('filament.exports.download', $record)),
+               Action::make('download_xlsx')
+                    ->label('Descargar XLSX')
+                    ->button()
+                    ->url(fn (Export $record) => route('filament.exports.download', $record)),
+            ]);
     }
 }

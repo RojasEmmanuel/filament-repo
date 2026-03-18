@@ -11,6 +11,8 @@ use Filament\Tables\Filters\TernaryFilter;
 use Filament\Actions\EditAction;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\ViewAction;
+use Filament\Schemas\Components\View;
 
 class FraccionamientosTable
 {
@@ -65,7 +67,8 @@ class FraccionamientosTable
             ])
 
             ->recordActions([
-                EditAction::make(),
+                EditAction::make()->iconButton()->color('primary'),
+                ViewAction::make()->iconButton()->color('gray'),
             ])
 
             ->toolbarActions([

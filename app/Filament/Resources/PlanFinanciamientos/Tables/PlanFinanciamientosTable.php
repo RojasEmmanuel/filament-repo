@@ -5,8 +5,10 @@ namespace App\Filament\Resources\PlanFinanciamientos\Tables;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
+use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Support\Str as SupportStr;
 
@@ -122,7 +124,7 @@ class PlanFinanciamientosTable
             ])
             ->filters([
                 // Filtro por estado
-                \Filament\Tables\Filters\SelectFilter::make('activo')
+                SelectFilter::make('activo')
                     ->label('Estado')
                     ->options([
                         true => 'Activo',
@@ -131,7 +133,7 @@ class PlanFinanciamientosTable
                     ->default(true),
 
                 // Filtro por frecuencia de pago
-                \Filament\Tables\Filters\SelectFilter::make('frecuencia_pago')
+                SelectFilter::make('frecuencia_pago')
                     ->label('Frecuencia de Pago')
                     ->multiple()
                     ->options([
@@ -145,7 +147,7 @@ class PlanFinanciamientosTable
                     ]),
 
                 // Filtro por tipo de interés
-                \Filament\Tables\Filters\SelectFilter::make('tipo_interes')
+                SelectFilter::make('tipo_interes')
                     ->label('Tipo de Interés')
                     ->options([
                         'porcentaje' => 'Porcentaje',
@@ -153,7 +155,7 @@ class PlanFinanciamientosTable
                     ]),
 
                 // Filtro por tipo de penalización
-                \Filament\Tables\Filters\SelectFilter::make('tipo_penalizacion')
+               SelectFilter::make('tipo_penalizacion')
                     ->label('Tipo Penalización')
                     ->options([
                         'porcentaje' => 'Porcentaje',
@@ -178,9 +180,14 @@ class PlanFinanciamientosTable
             ])
             ->defaultSort('created_at', 'desc')
             ->recordActions([
+                ViewAction::make()
+                    ->icon('heroicon-o-eye')
+                    ->color('gray')
+                    ->label(''),
                 EditAction::make()
                     ->icon('heroicon-o-pencil')
-                    ->color('primary'),
+                    ->color('primary')
+                    ->label(''),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

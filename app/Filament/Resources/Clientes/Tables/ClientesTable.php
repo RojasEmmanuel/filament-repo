@@ -15,6 +15,7 @@ use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Table;
 use Filament\Forms\Components\DatePicker;
+use Filament\Schemas\Components\View;
 
 class ClientesTable
 {
@@ -209,16 +210,13 @@ class ClientesTable
             ->recordActions([
                 ViewAction::make()
                     ->icon('heroicon-o-eye')
-                    ->color('info')
-                    ->label('Ver'),
+                    ->color('info'),
                 EditAction::make()
                     ->icon('heroicon-o-pencil')
-                    ->color('warning')
-                    ->label('Editar'),
+                    ->color('warning'),
                 DeleteAction::make()
                     ->icon('heroicon-o-trash')
                     ->color('danger')
-                    ->label('Eliminar')
                     ->requiresConfirmation(),
             ])
             ->toolbarActions([
@@ -232,9 +230,14 @@ class ClientesTable
                     ->exporter(ClientesExporter::class)
                     ->icon('heroicon-o-document-arrow-down')
                     ->color('success')
-                    ->label('Exportar selección'),
+                    ->label('Exportar')
+                    ->requiresConfirmation(),
             ])
             ->actions([
+                ViewAction::make()
+                    ->icon('heroicon-o-eye')
+                    ->color('Gray')
+                    ->label(''),
                 EditAction::make()
                     ->icon('heroicon-o-pencil')
                     ->color('warning')

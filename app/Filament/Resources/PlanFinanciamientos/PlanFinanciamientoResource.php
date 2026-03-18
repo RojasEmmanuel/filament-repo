@@ -20,8 +20,8 @@ class PlanFinanciamientoResource extends Resource
     protected static ?string $model = PlanFinanciamiento::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedDocumentCheck;
-    protected static ?string $label = 'Planes de Financiamiento';
-    protected static string|UnitEnum|null $navigationGroup = 'Configuración';
+    protected static ?string $label = 'Financiamiento';
+    protected static string|UnitEnum|null $navigationGroup = 'Atención al Cliente';
     protected static ?int $navigationSort = 6;
     protected static ?string $recordTitleAttribute = 'PlanFinanciamiento';
 

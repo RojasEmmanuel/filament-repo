@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Ventas extends Model
 {
@@ -41,8 +42,20 @@ class Ventas extends Model
         return $this->belongsTo(Fraccionamiento::class);
     }
 
-    public function ventaLotes()
+    public function ventaLotes(): HasMany
     {
-        return $this->hasMany(VentaLotes::class);
+        return $this->hasMany(
+            VentaLotes::class,  // Modelo relacionado
+            'venta_id',          // Foreign key en tabla venta_lotes
+            'id'                 // Local key en tabla ventas
+        );
+    }
+
+    /**
+     * Getter personalizado para conteo de lotes
+     */
+    public function getLotesCountAttribute()
+    {
+        return $this->ventaLotes()->count();
     }
 }

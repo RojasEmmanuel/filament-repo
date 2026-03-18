@@ -6,7 +6,9 @@ use App\Filament\Resources\Ventas\VentasResource;
 use App\Models\Lotes;
 use App\Models\PlanFinanciamiento;
 use App\Models\VentaLotes;
+use Filament\Notifications\Notification;
 use Filament\Resources\Pages\CreateRecord;
+use Illuminate\Support\Facades\Auth;
 
 class CreateVentas extends CreateRecord
 {
@@ -66,6 +68,14 @@ class CreateVentas extends CreateRecord
                 'estatus' => 'vendido'
             ]);
         }
+
+
+        $usuario = Auth::user();
+        Notification::make()
+            ->title('Venta Registrada')
+            ->body("La venta con folio {$venta->folio} ha sido creada exitosamente.")
+            ->success()
+            ->sendToDatabase($usuario);
     }
 }
 

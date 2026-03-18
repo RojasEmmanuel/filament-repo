@@ -121,7 +121,6 @@ class ClientesForm
                         
                     ])->persistTabInQueryString() // Opcional: guarda la pestaña activa en la URL
                     ->columnSpanFull()
-                    ->vertical() // Esto asegura que ocupe todo el ancho disponible
                     
             ]);
     }

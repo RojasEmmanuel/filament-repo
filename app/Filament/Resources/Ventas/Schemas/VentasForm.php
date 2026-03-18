@@ -6,8 +6,7 @@ use App\Models\Lotes;
 use App\Models\PlanFinanciamiento;
 use App\Models\Clientes;
 use App\Models\Fraccionamiento;
-use Filament\Actions\Action;
-use Filament\Forms\Components\Wizard;
+
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Placeholder;
@@ -18,6 +17,7 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\ViewField;
 use Filament\Schemas\Components\Grid as ComponentsGrid;
+use Filament\Schemas\Components\Section as ComponentsSection;
 use Filament\Schemas\Components\Wizard as ComponentsWizard;
 use Filament\Schemas\Components\Wizard\Step;
 use Filament\Schemas\Schema;
@@ -33,10 +33,7 @@ class VentasForm
                 Step::make('fraccionamiento_lotes')
                     ->label('Fraccionamiento y Lotes')
                     ->icon('heroicon-m-building-office')
-                    ->completedIcon('heroicon-m-check-badge')
-                    ->columns(2)
                     ->schema([
-                        // Fraccionamiento
                         Select::make('fraccionamiento_id')
                             ->label('Fraccionamiento')
                             ->relationship('fraccionamiento', 'nombre')
@@ -44,124 +41,143 @@ class VentasForm
                             ->reactive()
                             ->required()
                             ->afterStateUpdated(function ($set) {
-                                $set('lotes', null);
+                                $set('lotes', []);
                                 $set('subtotal', 0);
                                 $set('total', 0);
-                            })
-                            ->suffixAction(
-                                Action::make('ver_fraccionamiento')
-                                    ->icon('heroicon-m-information-circle')
-                                    ->color('info')
-                                    ->modalHeading('Detalles del Fraccionamiento')
-                                    ->modalContent(function ($get) {
-                                        $fraccionamientoId = $get('fraccionamiento_id');
-                                        if (!$fraccionamientoId) return null;
+                            }),
+
+                        // INFO FRACCIONAMIENTO - SOLO COMPONENTES FILAMENT
+                        ComponentsSection::make('Información del Fraccionamiento')
+                            ->icon('heroicon-m-map')
+                            ->schema([
+                                ComponentsGrid::make(3)
+                                    ->schema([
+                                        Placeholder::make('fracc_nombre')
+                                            ->label('Nombre')
+                                            ->content(fn ($get) => Fraccionamiento::find($get('fraccionamiento_id'))?->nombre ?? '-'),
                                         
-                                        $fraccionamiento = Fraccionamiento::find($fraccionamientoId);
-                                        if (!$fraccionamiento) return null;
+                                        Placeholder::make('fracc_ubicacion')
+                                            ->label('Ubicación')
+                                            ->content(fn ($get) => Fraccionamiento::find($get('fraccionamiento_id'))?->ubicacion ?? '-'),
                                         
-                                        return new HtmlString("
-                                            <div class='space-y-2'>
-                                                <h3 class='text-lg font-bold'>{$fraccionamiento->nombre}</h3>
-                                                <p><strong>Ubicación:</strong> {$fraccionamiento->ubicacion}</p>
-                                                <p><strong>Código Postal:</strong> {$fraccionamiento->codigo_postal}</p>
-                                                <p><strong>Área Total:</strong> " . number_format($fraccionamiento->area_total, 2) . " m²</p>
-                                                <p><strong>Total Manzanas:</strong> {$fraccionamiento->total_manzanas}</p>
-                                                <p><strong>Total Lotes:</strong> {$fraccionamiento->total_lotes}</p>
-                                                <p><strong>Descripción:</strong> {$fraccionamiento->descripcion}</p>
-                                            </div>
-                                        ");
-                                    })
-                                    ->modalSubmitAction(false)
-                                    ->modalCancelActionLabel('Cerrar')
-                            ),
-                        
-                        // Información del Fraccionamiento (Placeholder)
-                        Placeholder::make('info_fraccionamiento')
-                            ->label('Información del Fraccionamiento')
-                            ->content(function ($get) {
-                                $fraccionamientoId = $get('fraccionamiento_id');
-                                if (!$fraccionamientoId) return 'Seleccione un fraccionamiento';
+                                        Placeholder::make('fracc_cp')
+                                            ->label('Código Postal')
+                                            ->content(fn ($get) => Fraccionamiento::find($get('fraccionamiento_id'))?->codigo_postal ?? '-'),
+                                        
+                                        Placeholder::make('fracc_area')
+                                            ->label('Área Total')
+                                            ->content(fn ($get) => number_format(floatval(Fraccionamiento::find($get('fraccionamiento_id'))?->area_total ?? 0), 2) . ' m²'),
+                                        
+                                        Placeholder::make('fracc_manzanas')
+                                            ->label('Total Manzanas')
+                                            ->content(fn ($get) => Fraccionamiento::find($get('fraccionamiento_id'))?->total_manzanas ?? '-'),
+                                        
+                                        Placeholder::make('fracc_lotes')
+                                            ->label('Lotes Disponibles')
+                                            ->content(function ($get) {
+                                                $f = Fraccionamiento::withCount('lotes')->find($get('fraccionamiento_id'));
+                                                if (!$f) return '-';
+                                                
+                                                $disponibles = $f->lotes()->where('estatus', 'disponible')->count();
+                                                return $disponibles . '/' . ($f->lotes_count ?? 0);
+                                            })
+                                            ->extraAttributes(['class' => 'text-success-600 font-medium']),
+                                    ]),
                                 
-                                $fraccionamiento = Fraccionamiento::find($fraccionamientoId);
-                                if (!$fraccionamiento) return 'No disponible';
-                                
-                                return new HtmlString("
-                                    <div class='bg-gray-50 p-3 rounded-lg'>
-                                        <p class='text-sm'><span class='font-medium'>Ubicación:</span> {$fraccionamiento->ubicacion}</p>
-                                        <p class='text-sm'><span class='font-medium'>CP:</span> {$fraccionamiento->codigo_postal}</p>
-                                        <p class='text-sm'><span class='font-medium'>Lotes disponibles:</span> " . $fraccionamiento->lotes()->where('estatus', 'disponible')->count() . "</p>
-                                    </div>
-                                ");
-                            })
-                            ->columnSpan(1),
-                        
-                        // Lotes (ocupa 2 columnas)
+                                Placeholder::make('fracc_descripcion')
+                                    ->label('Descripción')
+                                    ->content(fn ($get) => Fraccionamiento::find($get('fraccionamiento_id'))?->descripcion ?? '-')
+                                    ->visible(fn ($get) => Fraccionamiento::find($get('fraccionamiento_id'))?->descripcion),
+                            ])
+                            ->visible(fn ($get) => $get('fraccionamiento_id'))
+                            ->collapsible(false),
+
                         Select::make('lotes')
-                            ->label('Lotes Disponibles')
+                            ->label('Selección de Lotes')
                             ->multiple()
                             ->searchable()
                             ->options(function ($get) {
-                                $fraccionamientoId = $get('fraccionamiento_id');
-                                if (!$fraccionamientoId) return [];
+                                $id = $get('fraccionamiento_id');
+                                if (!$id) return [];
                                 
-                                return Lotes::where('fraccionamiento_id', $fraccionamientoId)
+                                return Lotes::where('fraccionamiento_id', $id)
                                     ->where('estatus', 'disponible')
                                     ->get()
-                                    ->mapWithKeys(function ($lote) {
-                                        return [
-                                            $lote->id => "{$lote->nombre} - $" . number_format($lote->precio, 2) . " MXN"
-                                        ];
-                                    });
+                                    ->mapWithKeys(fn ($l) => [
+                                        $l->id => "{$l->nombre} - $" . number_format(floatval($l->precio), 2)
+                                    ]);
                             })
                             ->reactive()
                             ->afterStateUpdated(function ($state, $set) {
                                 $lotes = Lotes::whereIn('id', $state ?? [])->get();
-                                $subtotal = $lotes->sum('precio');
-                                
-                                $set('subtotal', $subtotal);
-                                $set('total', $subtotal);
+                                $total = $lotes->sum('precio');
+                                $set('subtotal', floatval($total));
+                                $set('total', floatval($total));
                             })
                             ->required()
-                            ->helperText('Seleccione uno o más lotes disponibles')
-                            ->columnSpanFull(),
-                        
-                        // Resumen de lotes seleccionados
-                        Placeholder::make('resumen_lotes')
-                            ->label('Resumen de Lotes Seleccionados')
-                            ->content(function ($get) {
-                                $loteIds = $get('lotes') ?? [];
-                                if (empty($loteIds)) return 'No hay lotes seleccionados';
+                            ->helperText('Seleccione uno o más lotes disponibles'),
+
+                        // RESUMEN LOTES - USANDO GRID DE FILAMENT (SIN FONDO BLANCO)
+                        ComponentsSection::make('Lotes Seleccionados')
+                            ->schema(function ($get) {
+                                $ids = $get('lotes') ?? [];
+                                if (empty($ids)) return [];
                                 
-                                $lotes = Lotes::whereIn('id', $loteIds)->get();
+                                $lotes = Lotes::whereIn('id', $ids)->get();
+                                $total = $lotes->sum('precio');
                                 
-                                $html = '<div class="space-y-2">';
-                                foreach ($lotes as $lote) {
-                                    $html .= "
-                                        <div class='flex justify-between items-center p-2 bg-gray-50 rounded'>
-                                            <div>
-                                                <span class='font-medium'>{$lote->nombre}</span>
-                                                <span class='text-xs text-gray-500 ml-2'>MZ {$lote->manzana} - LT {$lote->lote}</span>
-                                            </div>
-                                            <div>
-                                                <span class='font-bold text-success-600'>$" . number_format($lote->precio, 2) . "</span>
-                                            </div>
-                                        </div>
-                                    ";
+                                $schema = [];
+                                
+                                foreach ($lotes as $index => $l) {
+                                    $schema[] = ComponentsGrid::make(12)
+                                        ->schema([
+                                            Placeholder::make("lote_nombre_{$index}")
+                                                ->label('')
+                                                ->content($l->nombre)
+                                                ->columnSpan(3),
+                                            
+                                            Placeholder::make("lote_manzana_{$index}")
+                                                ->label('')
+                                                ->content('MZ ' . $l->manzana)
+                                                ->columnSpan(2),
+                                            
+                                            Placeholder::make("lote_area_{$index}")
+                                                ->label('')
+                                                ->content(number_format(floatval($l->area), 2) . ' m²')
+                                                ->columnSpan(2),
+                                            
+                                            Placeholder::make("lote_precio_{$index}")
+                                                ->label('')
+                                                ->content('$' . number_format(floatval($l->precio), 2))
+                                                ->columnSpan(3)
+                                                ->extraAttributes(['class' => 'text-right font-medium']),
+                                        ]);
                                 }
-                                $html .= '</div>';
                                 
-                                return new HtmlString($html);
+                                // Total
+                                $schema[] = ComponentsGrid::make(2)
+                                    ->schema([
+                                        Placeholder::make('resumen_total_label')
+                                            ->label('')
+                                            ->content('TOTAL')
+                                            ->extraAttributes(['class' => 'font-bold text-right']),
+                                        
+                                        Placeholder::make('resumen_total_valor')
+                                            ->label('')
+                                            ->content('$' . number_format(floatval($total), 2))
+                                            ->extraAttributes(['class' => 'font-bold text-right text-success-600']),
+                                    ]);
+                                
+                                return $schema;
                             })
-                            ->columnSpanFull(),
+                            ->visible(fn ($get) => !empty($get('lotes')))
+                            ->collapsible(true),
                     ]),
-                
-                // PASO 2: CLIENTE
+
+                // PASO 2: CLIENTE - IGUAL CON COMPONENTES PUROS
                 Step::make('cliente')
-                    ->label('Información del Cliente')
+                    ->label('Cliente')
                     ->icon('heroicon-m-user')
-                    ->completedIcon('heroicon-m-check-badge')
-                    ->columns(2)
                     ->schema([
                         Select::make('cliente_id')
                             ->label('Cliente')
@@ -170,311 +186,298 @@ class VentasForm
                             ->required()
                             ->reactive()
                             ->createOptionForm([
-                                ComponentsGrid::make(2)
+                                ComponentsGrid::make(2)->schema([
+                                    TextInput::make('nombre')->required(),
+                                    TextInput::make('apellidos')->required(),
+                                    TextInput::make('telefono'),
+                                    DatePicker::make('fecha_nacimiento'),
+                                    TextInput::make('curp'),
+                                    TextInput::make('rfc'),
+                                    TextInput::make('ocupacion'),
+                                    Select::make('estado_civil')
+                                        ->options([
+                                            'soltero' => 'Soltero/a',
+                                            'casado' => 'Casado/a',
+                                            'otro' => 'Otro',
+                                        ]),
+                                ]),
+                            ]),
+
+                        ComponentsSection::make('Información del Cliente')
+                            ->icon('heroicon-m-user-circle')
+                            ->schema([
+                                ComponentsGrid::make(3)
                                     ->schema([
-                                        TextInput::make('nombre')->required(),
-                                        TextInput::make('apellidos')->required(),
-                                        TextInput::make('email')->email(),
-                                        TextInput::make('telefono'),
-                                        DatePicker::make('fecha_nacimiento'),
-                                        TextInput::make('curp'),
-                                        TextInput::make('rfc'),
-                                        TextInput::make('ocupacion'),
-                                        Select::make('estado_civil')
-                                            ->options([
-                                                'soltero' => 'Soltero/a',
-                                                'casado' => 'Casado/a',
-                                                'divorciado' => 'Divorciado/a',
-                                                'viudo' => 'Viudo/a',
-                                            ]),
-                                        TextInput::make('ciudad'),
+                                        Placeholder::make('cliente_nombre')
+                                            ->label('Nombre completo')
+                                            ->content(fn ($get) => Clientes::find($get('cliente_id'))?->nombre . ' ' . (Clientes::find($get('cliente_id'))?->apellidos ?? '')),
+                                        
+                                        Placeholder::make('cliente_edad')
+                                            ->label('Edad')
+                                            ->content(function ($get) {
+                                                $c = Clientes::find($get('cliente_id'));
+                                                return $c?->fecha_nacimiento ? \Carbon\Carbon::parse($c->fecha_nacimiento)->age . ' años' : 'N/A';
+                                            }),
+                                        
+                                        Placeholder::make('cliente_telefono')
+                                            ->label('Teléfono')
+                                            ->content(fn ($get) => Clientes::find($get('cliente_id'))?->telefono ?? 'N/A'),
+                                        
+                                        Placeholder::make('cliente_curp')
+                                            ->label('CURP')
+                                            ->content(fn ($get) => Clientes::find($get('cliente_id'))?->curp ?? 'N/A')
+                                            ->extraAttributes(['class' => 'font-mono']),
+                                        
+                                        Placeholder::make('cliente_rfc')
+                                            ->label('RFC')
+                                            ->content(fn ($get) => Clientes::find($get('cliente_id'))?->rfc ?? 'N/A')
+                                            ->extraAttributes(['class' => 'font-mono']),
+                                        
+                                        Placeholder::make('cliente_ocupacion')
+                                            ->label('Ocupación')
+                                            ->content(fn ($get) => Clientes::find($get('cliente_id'))?->ocupacion ?? 'N/A'),
+                                        
+                                        Placeholder::make('cliente_ciudad')
+                                            ->label('Ciudad')
+                                            ->content(fn ($get) => Clientes::find($get('cliente_id'))?->ciudad ?? 'N/A'),
+
                                     ]),
                             ])
-                            ->suffixAction(
-                                Action::make('ver_cliente')
-                                    ->icon('heroicon-m-information-circle')
-                                    ->color('info')
-                                    ->modalHeading('Información Completa del Cliente')
-                                    ->modalContent(function ($get) {
-                                        $clienteId = $get('cliente_id');
-                                        if (!$clienteId) return null;
-                                        
-                                        $cliente = Clientes::find($clienteId);
-                                        if (!$cliente) return null;
-                                        
-                                        $edad = $cliente->fecha_nacimiento ? \Carbon\Carbon::parse($cliente->fecha_nacimiento)->age : 'N/A';
-                                        
-                                        return new HtmlString("
-                                            <div class='space-y-4'>
-                                                <div class='bg-gray-50 p-4 rounded-lg'>
-                                                    <h3 class='text-lg font-bold mb-3'>Datos Personales</h3>
-                                                    <div class='grid grid-cols-2 gap-4'>
-                                                        <div><strong>Nombre:</strong> {$cliente->nombre} {$cliente->apellidos}</div>
-                                                        <div><strong>Edad:</strong> {$edad} años</div>
-                                                        <div><strong>Estado Civil:</strong> " . ucfirst($cliente->estado_civil ?? 'N/A') . "</div>
-                                                        <div><strong>Ocupación:</strong> {$cliente->ocupacion}</div>
-                                                    </div>
-                                                </div>
-                                                
-                                                <div class='bg-gray-50 p-4 rounded-lg'>
-                                                    <h3 class='text-lg font-bold mb-3'>Documentación</h3>
-                                                    <div class='grid grid-cols-2 gap-4'>
-                                                        <div><strong>CURP:</strong> {$cliente->curp}</div>
-                                                        <div><strong>RFC:</strong> {$cliente->rfc}</div>
-                                                    </div>
-                                                </div>
-                                                
-                                                <div class='bg-gray-50 p-4 rounded-lg'>
-                                                    <h3 class='text-lg font-bold mb-3'>Contacto</h3>
-                                                    <div class='grid grid-cols-2 gap-4'>
-                                                        <div><strong>Teléfono:</strong> {$cliente->telefono}</div>
-                                                        <div><strong>Ciudad:</strong> {$cliente->ciudad}</div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        ");
-                                    })
-                                    ->modalSubmitAction(false)
-                                    ->modalCancelActionLabel('Cerrar')
-                            ),
-                        
-                        // Información del Cliente (Placeholder)
-                        Placeholder::make('info_cliente')
-                            ->label('Información del Cliente')
-                            ->content(function ($get) {
-                                $clienteId = $get('cliente_id');
-                                if (!$clienteId) return 'Seleccione un cliente';
-                                
-                                $cliente = Clientes::find($clienteId);
-                                if (!$cliente) return 'No disponible';
-                                
-                                $edad = $cliente->fecha_nacimiento ? \Carbon\Carbon::parse($cliente->fecha_nacimiento)->age : 'N/A';
-                                
-                                return new HtmlString("
-                                    <div class='bg-gray-50 p-3 rounded-lg space-y-2'>
-                                        <p><span class='font-medium'>Nombre completo:</span> {$cliente->nombre} {$cliente->apellidos}</p>
-                                        <p><span class='font-medium'>Edad:</span> {$edad} años</p>
-                                        <p><span class='font-medium'>Teléfono:</span> {$cliente->telefono}</p>
-                                        <p><span class='font-medium'>CURP:</span> {$cliente->curp}</p>
-                                    </div>
-                                ");
-                            })
-                            ->columnSpan(1),
+                            ->visible(fn ($get) => $get('cliente_id'))
+                            ->collapsible(false),
                     ]),
-                
+
                 // PASO 3: PLAN DE FINANCIAMIENTO
                 Step::make('financiamiento')
                     ->label('Plan de Financiamiento')
                     ->icon('heroicon-m-calculator')
-                    ->completedIcon('heroicon-m-check-badge')
-                    ->columns(2)
                     ->schema([
                         Select::make('plan_financiamiento_id')
-                            ->label('Plan de Financiamiento')
+                            ->label('Plan')
                             ->relationship('planFinanciamiento', 'nombre')
                             ->required()
                             ->reactive()
                             ->searchable()
                             ->afterStateUpdated(function ($state, $set, $get) {
                                 $plan = PlanFinanciamiento::find($state);
-                                $subtotal = $get('subtotal') ?? 0;
+                                $total = floatval($get('total') ?? 0);
                                 
-                                if (!$plan) return;
-                                
-                                $enganche = $plan->modo_enganche === 'porcentaje'
-                                    ? ($subtotal * $plan->enganche) / 100
-                                    : $plan->enganche;
-                                
-                                $set('enganche_aplicado', $enganche);
-                                
-                                // Calcular pago aproximado si es crédito
-                                if ($plan->tipo_enganche === 'credito') {
-                                    $saldo = $subtotal - $enganche;
-                                    $interes = $plan->tipo_interes === 'porcentaje' 
-                                        ? ($saldo * $plan->valor_interes) / 100 
-                                        : $plan->valor_interes;
-                                    
-                                    $pagoMensual = ($saldo + $interes) / $plan->plazo_pagos;
-                                    $set('pago_mensual_aprox', $pagoMensual);
-                                }
-                            })
-                            ->suffixAction(
-                                Action::make('ver_plan')
-                                    ->icon('heroicon-m-information-circle')
-                                    ->color('info')
-                                    ->modalHeading('Detalles del Plan')
-                                    ->modalContent(function ($get) {
-                                        $planId = $get('plan_financiamiento_id');
-                                        if (!$planId) return null;
-                                        
-                                        $plan = PlanFinanciamiento::find($planId);
-                                        if (!$plan) return null;
-                                        
-                                        $frecuencia = [
-                                            'semanal' => 'Semanal',
-                                            'quincenal' => 'Quincenal',
-                                            'mensual' => 'Mensual',
-                                            'bimestral' => 'Bimestral',
-                                        ][$plan->frecuencia_pago] ?? $plan->frecuencia_pago;
-                                        
-                                        return new HtmlString("
-                                            <div class='space-y-4'>
-                                                <div class='bg-gray-50 p-4 rounded-lg'>
-                                                    <h3 class='text-lg font-bold mb-3'>{$plan->nombre}</h3>
-                                                    <p class='text-gray-600 mb-3'>{$plan->descripcion}</p>
-                                                    
-                                                    <div class='grid grid-cols-2 gap-4'>
-                                                        <div><strong>Frecuencia:</strong> {$frecuencia}</div>
-                                                        <div><strong>Tipo:</strong> " . ucfirst($plan->tipo_enganche) . "</div>
-                                                        <div><strong>Enganche:</strong> " . ($plan->modo_enganche === 'porcentaje' ? $plan->enganche . '%' : '$' . number_format($plan->enganche, 2)) . "</div>
-                                                        <div><strong>Plazo:</strong> {$plan->plazo_pagos} pagos</div>
-                                                    </div>
-                                                </div>
-                                                
-                                                <div class='bg-gray-50 p-4 rounded-lg'>
-                                                    <h3 class='text-lg font-bold mb-3'>Intereses</h3>
-                                                    <div class='grid grid-cols-2 gap-4'>
-                                                        <div><strong>Tipo:</strong> " . ucfirst($plan->tipo_interes) . "</div>
-                                                        <div><strong>Valor:</strong> " . ($plan->tipo_interes === 'porcentaje' ? $plan->valor_interes . '%' : '$' . number_format($plan->valor_interes, 2)) . "</div>
-                                                        <div><strong>Periodo:</strong> {$plan->periodo_interes}</div>
-                                                    </div>
-                                                </div>
-                                                
-                                                <div class='bg-gray-50 p-4 rounded-lg'>
-                                                    <h3 class='text-lg font-bold mb-3'>Penalizaciones</h3>
-                                                    <div class='grid grid-cols-2 gap-4'>
-                                                        <div><strong>Tipo:</strong> " . ucfirst($plan->tipo_penalizacion) . "</div>
-                                                        <div><strong>Valor:</strong> " . ($plan->tipo_penalizacion === 'porcentaje' ? $plan->penalizacion . '%' : '$' . number_format($plan->penalizacion, 2)) . "</div>
-                                                        <div><strong>Aplicación:</strong> {$plan->aplicacion_penalizacion}</div>
-                                                        <div><strong>Días de gracia:</strong> {$plan->dias_gracia}</div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        ");
-                                    })
-                                    ->modalSubmitAction(false)
-                                    ->modalCancelActionLabel('Cerrar')
-                            ),
-                        
-                        Placeholder::make('info_plan')
-                            ->label('Resumen del Plan')
-                            ->content(function ($get) {
-                                $planId = $get('plan_financiamiento_id');
-                                if (!$planId) return 'Seleccione un plan';
-                                
-                                $plan = PlanFinanciamiento::find($planId);
-                                if (!$plan) return 'No disponible';
-                                
-                                $subtotal = $get('subtotal') ?? 0;
-                                $enganche = $get('enganche_aplicado') ?? 0;
-                                
-                                $engancheTexto = $plan->modo_enganche === 'porcentaje' 
-                                    ? $plan->enganche . '% (≈ $' . number_format($enganche, 2) . ')'
-                                    : '$' . number_format($plan->enganche, 2);
-                                
-                                return new HtmlString("
-                                    <div class='bg-gray-50 p-3 rounded-lg space-y-2'>
-                                        <p><span class='font-medium'>Enganche:</span> {$engancheTexto}</p>
-                                        <p><span class='font-medium'>Plazo:</span> {$plan->plazo_pagos} pagos</p>
-                                        <p><span class='font-medium'>Interés:</span> " . ($plan->tipo_interes === 'porcentaje' ? $plan->valor_interes . '%' : '$' . number_format($plan->valor_interes, 2)) . "</p>
-                                        " . ($get('pago_mensual_aprox') ? "<p><span class='font-medium'>Pago aprox.:</span> $" . number_format($get('pago_mensual_aprox'), 2) . "</p>" : '') . "
-                                    </div>
-                                ");
-                            })
-                            ->columnSpan(1),
-                    ]),
-                
-                // PASO 4: DETALLES DE PAGO
-                Step::make('pago')
-                    ->label('Detalles de Pago')
-                    ->icon('heroicon-m-currency-dollar')
-                    ->completedIcon('heroicon-m-check-badge')
-                    ->columns(2)
-                    ->schema([
-                        // Subtotal (solo lectura)
-                        TextInput::make('subtotal')
-                            ->label('Subtotal')
-                            ->prefix('$')
-                            ->formatStateUsing(fn ($state) => number_format($state, 2))
-                            ->disabled()
-                            ->extraAttributes(['class' => 'bg-gray-50']),
-                        
-                        // Descuento
-                        TextInput::make('descuento')
-                            ->label('Descuento')
-                            ->prefix('$')
-                            ->numeric()
-                            ->default(0)
-                            ->reactive()
-                            ->afterStateUpdated(function ($state, $set, $get) {
-                                $subtotal = $get('subtotal') ?? 0;
-                                $set('total', $subtotal - ($state ?? 0));
-                                
-                                // Recalcular enganche si hay plan seleccionado
-                                $planId = $get('plan_financiamiento_id');
-                                if ($planId) {
-                                    $plan = PlanFinanciamiento::find($planId);
-                                    if ($plan) {
-                                        $total = $subtotal - ($state ?? 0);
-                                        $enganche = $plan->modo_enganche === 'porcentaje'
-                                            ? ($total * $plan->enganche) / 100
-                                            : $plan->enganche;
-                                        $set('enganche_aplicado', $enganche);
-                                    }
+                                if ($plan) {
+                                    $enganche = $plan->modo_enganche === 'porcentaje'
+                                        ? ($total * floatval($plan->enganche)) / 100
+                                        : floatval($plan->enganche);
+                                    $set('enganche_aplicado', $enganche);
                                 }
                             }),
-                        
-                        // Total
-                        TextInput::make('total')
-                            ->label('Total')
-                            ->prefix('$')
-                            ->formatStateUsing(fn ($state) => number_format($state, 2))
-                            ->disabled()
-                            ->extraAttributes(['class' => 'bg-gray-50 font-bold text-success-600']),
-                        
-                        // Enganche aplicado
-                        TextInput::make('enganche_aplicado')
-                            ->label('Enganche a Pagar')
-                            ->prefix('$')
-                            ->numeric()
-                            ->dehydrated()
-                            ->required()
-                            ->extraAttributes(['class' => 'font-bold']),
-                        
-                        // Fecha de venta
-                        DatePicker::make('fecha_venta')
-                            ->label('Fecha de Venta')
-                            ->default(now())
-                            ->required()
-                            ->native(false)
-                            ->displayFormat('d/m/Y'),
-                        
-                        // Método de pago
-                        Select::make('metodo_pago')
-                            ->label('Método de Pago')
-                            ->options([
-                                'efectivo' => '💰 Efectivo',
-                                'transferencia' => '🏦 Transferencia',
-                                'tarjeta' => '💳 Tarjeta',
+
+                        ComponentsSection::make('Detalles del Plan')
+                            ->schema([
+                                ComponentsGrid::make(2)
+                                    ->schema([
+                                        Placeholder::make('plan_nombre')
+                                            ->label('Plan')
+                                            ->content(fn ($get) => PlanFinanciamiento::find($get('plan_financiamiento_id'))?->nombre ?? '-'),
+                                        
+                                        Placeholder::make('plan_descripcion')
+                                            ->label('Descripción')
+                                            ->content(fn ($get) => PlanFinanciamiento::find($get('plan_financiamiento_id'))?->descripcion ?? '-'),
+                                        
+                                        Placeholder::make('plan_enganche')
+                                            ->label('Enganche')
+                                            ->content(function ($get) {
+                                                $p = PlanFinanciamiento::find($get('plan_financiamiento_id'));
+                                                if (!$p) return '-';
+                                                
+                                                return $p->modo_enganche === 'porcentaje' 
+                                                    ? $p->enganche . '%' 
+                                                    : '$' . number_format(floatval($p->enganche), 2);
+                                            }),
+                                        
+                                        Placeholder::make('plan_plazo')
+                                            ->label('Plazo')
+                                            ->content(fn ($get) => PlanFinanciamiento::find($get('plan_financiamiento_id'))?->plazo_pagos . ' pagos' ?? '-'),
+                                        
+                                        Placeholder::make('plan_frecuencia')
+                                            ->label('Frecuencia')
+                                            ->content(function ($get) {
+                                                $f = PlanFinanciamiento::find($get('plan_financiamiento_id'))?->frecuencia_pago;
+                                                return match($f) {
+                                                    'semanal' => 'Semanal',
+                                                    'quincenal' => 'Quincenal',
+                                                    'mensual' => 'Mensual',
+                                                    'bimestral' => 'Bimestral',
+                                                    default => $f ?? '-'
+                                                };
+                                            }),
+                                        
+                                        Placeholder::make('plan_interes')
+                                            ->label('Interés')
+                                            ->content(function ($get) {
+                                                $p = PlanFinanciamiento::find($get('plan_financiamiento_id'));
+                                                if (!$p) return '-';
+                                                
+                                                return $p->tipo_interes === 'porcentaje' 
+                                                    ? $p->valor_interes . '%' 
+                                                    : '$' . number_format(floatval($p->valor_interes), 2);
+                                            }),
+                                    ]),
+                                
+                                ComponentsGrid::make(2)
+                                    ->schema([
+                                        Placeholder::make('plan_total')
+                                            ->label('Total de la venta')
+                                            ->content(fn ($get) => '$' . number_format(floatval($get('total') ?? 0), 2))
+                                            ->extraAttributes(['class' => 'font-medium']),
+                                        
+                                        Placeholder::make('plan_enganche_calculado')
+                                            ->label('Enganche a pagar')
+                                            ->content(function ($get) {
+                                                $plan = PlanFinanciamiento::find($get('plan_financiamiento_id'));
+                                                $total = floatval($get('total') ?? 0);
+                                                
+                                                if (!$plan) return '-';
+                                                
+                                                $enganche = $plan->modo_enganche === 'porcentaje'
+                                                    ? ($total * floatval($plan->enganche)) / 100
+                                                    : floatval($plan->enganche);
+                                                    
+                                                return '$' . number_format($enganche, 2);
+                                            })
+                                            ->extraAttributes(['class' => 'font-bold text-warning-600']),
+                                    ])
+                                    ->visible(fn ($get) => $get('plan_financiamiento_id')),
                             ])
-                            ->required()
-                            ->native(false)
-                            ->columnSpan(1),
+                            ->visible(fn ($get) => $get('plan_financiamiento_id'))
+                            ->collapsible(false),
+                    ]),
+
+                // PASO 4: PAGO
+                Step::make('pago')
+                    ->label('Pago')
+                    ->icon('heroicon-m-currency-dollar')
+                    ->schema([
+                        ComponentsGrid::make(2)
+                            ->schema([
+                                TextInput::make('subtotal')
+                                    ->label('Subtotal')
+                                    ->prefix('$')
+                                    ->disabled()
+                                    ->dehydrated(true)
+                                    ->formatStateUsing(function ($state) {
+                                        if (is_numeric($state)) {
+                                            return number_format(floatval($state), 2);
+                                        }
+                                        if (is_string($state)) {
+                                            $clean = preg_replace('/[^0-9.-]/', '', $state);
+                                            if (is_numeric($clean)) {
+                                                return number_format(floatval($clean), 2);
+                                            }
+                                        }
+                                        return '0.00';
+                                    }),
+                                
+                                TextInput::make('descuento')
+                                    ->label('Descuento')
+                                    ->prefix('$')
+                                    ->numeric()
+                                    ->default(0)
+                                    ->reactive()
+                                    ->afterStateUpdated(function ($state, $set, $get) {
+                                        // Limpiar el subtotal si viene formateado
+                                        $subtotalRaw = $get('subtotal');
+                                        if (is_string($subtotalRaw)) {
+                                            $subtotalRaw = preg_replace('/[^0-9.-]/', '', $subtotalRaw);
+                                        }
+                                        $subtotal = floatval($subtotalRaw ?? 0);
+                                        $descuento = floatval($state ?? 0);
+                                        $total = max(0, $subtotal - $descuento);
+                                        $set('total', $total);
+                                        
+                                        // Recalcular enganche si hay plan
+                                        $planId = $get('plan_financiamiento_id');
+                                        if ($planId) {
+                                            $plan = PlanFinanciamiento::find($planId);
+                                            if ($plan) {
+                                                $enganche = $plan->modo_enganche === 'porcentaje'
+                                                    ? ($total * floatval($plan->enganche)) / 100
+                                                    : floatval($plan->enganche);
+                                                $set('enganche_aplicado', $enganche);
+                                            }
+                                        }
+                                    }),
+                                
+                                TextInput::make('total')
+                                    ->label('Total')
+                                    ->prefix('$')
+                                    ->disabled()
+                                    ->dehydrated(true)
+                                    ->formatStateUsing(function ($state) {
+                                        if (is_numeric($state)) {
+                                            return number_format(floatval($state), 2);
+                                        }
+                                        if (is_string($state)) {
+                                            $clean = preg_replace('/[^0-9.-]/', '', $state);
+                                            if (is_numeric($clean)) {
+                                                return number_format(floatval($clean), 2);
+                                            }
+                                        }
+                                        return '0.00';
+                                    }),
+                                
+                                TextInput::make('enganche_aplicado')
+                                    ->label('Enganche')
+                                    ->prefix('$')
+                                    ->numeric()
+                                    ->required()
+                                    ->formatStateUsing(function ($state) {
+                                        if (is_numeric($state)) {
+                                            return number_format(floatval($state), 2);
+                                        }
+                                        if (is_string($state)) {
+                                            $clean = preg_replace('/[^0-9.-]/', '', $state);
+                                            if (is_numeric($clean)) {
+                                                return number_format(floatval($clean), 2);
+                                            }
+                                        }
+                                        return '0.00';
+                                    }),
+                            ]),
                         
-                        // Comprobante
-                        FileUpload::make('comprobante_pago')
-                            ->label('Comprobante de Pago')
-                            ->directory('comprobantes')
-                            ->acceptedFileTypes(['image/*', 'application/pdf'])
-                            ->maxSize(5120)
-                            ->columnSpanFull(),
+                        ComponentsGrid::make(2)
+                            ->schema([
+                                DatePicker::make('fecha_venta')
+                                    ->label('Fecha de Venta')
+                                    ->default(now())
+                                    ->required()
+                                    ->native(false)
+                                    ->displayFormat('d/m/Y'),
+                                
+                                Select::make('metodo_pago')
+                                    ->label('Método de Pago')
+                                    ->options([
+                                        'efectivo' => 'Efectivo',
+                                        'transferencia' => 'Transferencia Bancaria',
+                                        'tarjeta' => 'Tarjeta de Crédito/Débito',
+                                    ])
+                                    ->required()
+                                    ->native(false),
+                            ]),
                         
-                        // Observaciones
-                        Textarea::make('observaciones')
-                            ->label('Observaciones')
-                            ->placeholder('Notas adicionales sobre la venta...')
-                            ->rows(3)
-                            ->columnSpanFull(),
+                        ComponentsGrid::make(2)
+                            ->schema([
+                                FileUpload::make('comprobante_pago')
+                                    ->label('Comprobante de Pago')
+                                    ->directory('comprobantes')
+                                    ->acceptedFileTypes(['image/*', 'application/pdf'])
+                                    ->maxSize(5120)
+                                    ->columnSpanFull(),
+                                
+                                Textarea::make('observaciones')
+                                    ->label('Observaciones')
+                                    ->placeholder('Notas adicionales sobre la venta...')
+                                    ->rows(2)
+                                    ->columnSpanFull(),
+                            ])
                     ]),
             ])
             ->skippable()

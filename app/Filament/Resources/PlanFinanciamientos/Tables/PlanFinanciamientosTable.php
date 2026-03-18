@@ -100,7 +100,8 @@ class PlanFinanciamientosTable
                     ->trueIcon('heroicon-o-check-circle')
                     ->falseIcon('heroicon-o-x-circle')
                     ->trueColor('success')
-                    ->falseColor('danger'),
+                    ->falseColor('danger')
+                    ->toggleable(isToggledHiddenByDefault: true),
 
                 // Fechas
                 TextColumn::make('created_at')

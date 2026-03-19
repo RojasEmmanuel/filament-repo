@@ -99,7 +99,7 @@ class VentasTable
                     ->color(fn ($state): string => $state === 'contado' ? 'success' : 'warning')
                     ->icon(fn ($state): string => $state === 'contado' ? 'heroicon-o-bolt' : 'heroicon-o-calendar-days')
                     ->formatStateUsing(fn ($state): string => strtoupper($state))
-                    ->toggleable(),
+                    ->toggleable(isToggledHiddenByDefault:true),
 
                 TextColumn::make('metodo_pago')
                     ->label('Método')
@@ -118,7 +118,7 @@ class VentasTable
                         'cheque' => 'heroicon-o-document',
                         default => 'heroicon-o-question-mark-circle',
                     })
-                    ->toggleable(),
+                    ->toggleable(isToggledHiddenByDefault:true),
 
                 TextColumn::make('fraccionamiento.nombre')
                     ->label('Fraccionamiento')

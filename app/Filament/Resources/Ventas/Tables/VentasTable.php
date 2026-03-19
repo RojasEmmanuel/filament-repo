@@ -124,7 +124,7 @@ class VentasTable
                     ->label('Fraccionamiento')
                     ->icon('heroicon-o-building-office')
                     ->color('gray')
-                    ->toggleable(),
+                    ->toggleable(isToggledHiddenByDefault: true),
 
                 // Corrección: Usar ventaLotes en lugar de lotes directamente
                 TextColumn::make('lotes_count')
@@ -133,7 +133,8 @@ class VentasTable
                     ->color('info')
                     ->icon('heroicon-o-squares-2x2')
                     ->toggleable()
-                    ->formatStateUsing(fn ($state) => $state . ' ' . ($state == 1 ? 'lote' : 'lotes')),
+                    ->formatStateUsing(fn ($state) => $state . ' ' . ($state == 1 ? 'lote' : 'lotes'))
+                    ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
                 SelectFilter::make('estatus')

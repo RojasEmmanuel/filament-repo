@@ -11,8 +11,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Spatie\Permission\Traits\HasRoles;
-use Filament\Models\Contracts\FilamentUser;
 use Filament\Panel;
+use Illuminate\Support\Facades\Storage;
 
 class User extends Authenticatable
 {
@@ -39,9 +39,12 @@ class User extends Authenticatable
 
     public function getFilamentAvatarUrl(): ?string
     {
-        return $this->avatar
-            ? asset('storage/' . $this->avatar)
-            : null;
+        if ($this->avatar) {
+            // Construye la URL manualmente
+            return asset('storage/' . $this->avatar);
+        }
+        
+        return 'https://ui-avatars.com/api/?name=' . urlencode($this->name);
     }
 
     public function sendPasswordResetNotification($token)

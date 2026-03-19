@@ -80,8 +80,7 @@ class UsersTable
                     ->sortable()
                     ->icon('heroicon-o-calendar')
                     ->iconColor('gray')
-                    ->description(fn ($record) => $record->created_at?->diffForHumans() ?? '')
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->description(fn ($record) => $record->created_at?->diffForHumans() ?? ''),
 
                 // Última actualización
                 TextColumn::make('updated_at')

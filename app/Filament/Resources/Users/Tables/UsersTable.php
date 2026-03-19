@@ -81,6 +81,13 @@ class UsersTable
                     ->icon('heroicon-o-calendar')
                     ->iconColor('gray')
                     ->description(fn ($record) => $record->created_at?->diffForHumans() ?? ''),
+                
+                TextColumn::make('is_active')
+                    ->label('Estado')
+                    ->badge()
+                    ->formatStateUsing(fn ($state) => $state ? 'Activo' : 'Inactivo')
+                    ->color(fn ($state) => $state ? 'success' : 'danger')
+                    ->icon(fn ($state) => $state ? 'heroicon-m-check-circle' : 'heroicon-m-x-circle'),
 
                 // Última actualización
                 TextColumn::make('updated_at')
@@ -104,6 +111,13 @@ class UsersTable
                     ->preload()
                     ->placeholder('Todos los roles'),
 
+                SelectFilter::make('is_active')
+                    ->label('Estado')
+                    ->options([
+                        true => 'Activo',
+                        false => 'Inactivo',
+                    ])
+                    ->default(true),
                 // Filtro por fecha de registro
                 Filter::make('created_at')
                     ->form([

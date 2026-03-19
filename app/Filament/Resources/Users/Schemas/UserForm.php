@@ -119,6 +119,11 @@ class UserForm
                                     ->prefixIcon('heroicon-m-key')
                                     ->dehydrated(false) // Nunca se envía a la BD
                                     ->required(fn ($get) => filled($get('password'))), // Requerido solo si password tiene valor
+                                
+                                Toggle::make('is_active')
+                                    ->label('Usuario activo')
+                                    ->helperText('Desactiva para bloquear el acceso sin eliminar el usuario')
+
                             ]),
 
                         

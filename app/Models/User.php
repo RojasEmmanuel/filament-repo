@@ -80,4 +80,9 @@ class User extends Authenticatable
         // Solo permitir acceso si el usuario está activo
         return $this->is_active === true;
     }
+
+    public function clientes()
+    {
+        return $this->hasMany(Clientes::class);
+    }
 }

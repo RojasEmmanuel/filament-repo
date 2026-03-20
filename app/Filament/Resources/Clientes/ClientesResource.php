@@ -14,6 +14,8 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Auth;
 use UnitEnum;
 
 class ClientesResource extends Resource
@@ -55,5 +57,17 @@ class ClientesResource extends Resource
         return [
             ClienteStats::class, // 👈 Registra el widget
         ];
+    }
+
+    public static function mutateFormDataBeforeCreate(array $data): array
+    {
+        $data['user_id'] = Auth::id(); // Asigna el ID del usuario autenticado
+
+        return $data;
+    }
+
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()->where('user_id', Auth::id());
     }
 }

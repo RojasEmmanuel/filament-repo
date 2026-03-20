@@ -6,7 +6,7 @@ use App\Models\Lotes;
 use App\Models\PlanFinanciamiento;
 use App\Models\Clientes;
 use App\Models\Fraccionamiento;
-
+use Dom\Text;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Placeholder;
@@ -21,6 +21,7 @@ use Filament\Schemas\Components\Section as ComponentsSection;
 use Filament\Schemas\Components\Wizard as ComponentsWizard;
 use Filament\Schemas\Components\Wizard\Step;
 use Filament\Schemas\Schema;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\HtmlString;
 
 class VentasForm
@@ -181,7 +182,12 @@ class VentasForm
                     ->schema([
                         Select::make('cliente_id')
                             ->label('Cliente')
-                            ->relationship('cliente', 'nombre')
+                            ->relationship(
+                                name: 'cliente',
+                                titleAttribute: 'nombre',
+                                modifyQueryUsing: fn ($query) => 
+                                    $query->where('user_id', Auth::id())
+                            )
                             ->searchable(['nombre', 'apellidos', 'curp', 'rfc'])
                             ->required()
                             ->reactive()
@@ -191,6 +197,7 @@ class VentasForm
                                     TextInput::make('apellidos')->required(),
                                     TextInput::make('telefono'),
                                     DatePicker::make('fecha_nacimiento'),
+                                    TextInput::make('ciudad'),
                                     TextInput::make('curp'),
                                     TextInput::make('rfc'),
                                     TextInput::make('ocupacion'),
@@ -201,7 +208,11 @@ class VentasForm
                                             'otro' => 'Otro',
                                         ]),
                                 ]),
-                            ]),
+                            ])
+                            ->createOptionUsing(function (array $data) {
+                                $data['user_id'] = Auth::id();
+                                return \App\Models\Clientes::create($data);
+                            }),
 
                         ComponentsSection::make('Información del Cliente')
                             ->icon('heroicon-m-user-circle')

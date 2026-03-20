@@ -18,7 +18,8 @@ class Clientes extends Model
         'curp',
         'rfc',
         'ocupacion',
-        'estado_civil'
+        'estado_civil',
+        'user_id',        
     ];
 
     protected static function boot()
@@ -35,5 +36,10 @@ class Clientes extends Model
     public function ventas()
     {
         return $this->hasMany(Ventas::class);
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
     }
 }

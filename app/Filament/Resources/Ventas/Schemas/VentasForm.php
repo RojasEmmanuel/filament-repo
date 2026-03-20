@@ -271,6 +271,7 @@ class VentasForm
                             }),
 
                         ComponentsSection::make('Detalles del Plan')
+                            ->icon('heroicon-m-document-text')
                             ->schema([
                                 ComponentsGrid::make(2)
                                     ->schema([
@@ -461,22 +462,22 @@ class VentasForm
                                     ])
                                     ->required()
                                     ->native(false),
-                            ]),
-                        
-                        ComponentsGrid::make(2)
-                            ->schema([
+                                
                                 FileUpload::make('comprobante_pago')
                                     ->label('Comprobante de Pago')
                                     ->directory('comprobantes')
-                                    ->acceptedFileTypes(['image/*', 'application/pdf'])
-                                    ->maxSize(5120)
-                                    ->columnSpanFull(),
+                                    ->acceptedFileTypes(['image/*', 'application/pdf']),
+                                    
                                 
                                 Textarea::make('observaciones')
                                     ->label('Observaciones')
                                     ->placeholder('Notas adicionales sobre la venta...')
                                     ->rows(2)
-                                    ->columnSpanFull(),
+                            ]),
+                        
+                        ComponentsGrid::make(2)
+                            ->schema([
+                                
                             ])
                     ]),
             ])

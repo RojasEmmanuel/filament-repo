@@ -11,6 +11,7 @@ class Ventas extends Model
     
     protected $fillable = [
         'cliente_id',
+        'user_id',
         'plan_financiamiento_id',
         'fraccionamiento_id',
         'folio',
@@ -57,5 +58,10 @@ class Ventas extends Model
     public function getLotesCountAttribute()
     {
         return $this->ventaLotes()->count();
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
     }
 }

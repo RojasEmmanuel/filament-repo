@@ -135,6 +135,12 @@ class VentasTable
                     ->toggleable()
                     ->formatStateUsing(fn ($state) => $state . ' ' . ($state == 1 ? 'lote' : 'lotes'))
                     ->toggleable(isToggledHiddenByDefault: true),
+                
+                TextColumn::make('user.name')
+                    ->label('Vendedor')
+                    ->icon('heroicon-o-user')
+                    ->color('info')
+                    ->toggleable(isToggledHiddenByDefault: false),
             ])
             ->filters([
                 SelectFilter::make('estatus')

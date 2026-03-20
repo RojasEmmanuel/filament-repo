@@ -43,6 +43,7 @@ class CreateVentas extends CreateRecord
         $data['folio'] = 'VTA-' . str_pad(rand(1, 9999), 4, '0', STR_PAD_LEFT);
         $data['tipo_venta'] = 'financiamiento';
         $data['estatus'] = 'pendiente';
+        $data['user_id'] = Auth::id(); // Asigna el ID del usuario autenticado
 
         return $data;
     }

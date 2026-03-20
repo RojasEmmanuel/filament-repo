@@ -24,6 +24,8 @@ class FraccionamientoResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedMap;
     protected static string|UnitEnum|null $navigationGroup = 'Atención al Cliente';
+    protected static ?string $navigationLabel = 'Proyectos';
+    protected static ?string $label = 'Mis proyectos';
     
     protected static ?string $recordTitleAttribute = 'fraccionamiento';
     protected static ?int $navigationSort = 1;

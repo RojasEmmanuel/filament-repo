@@ -208,6 +208,7 @@ class VentasTable
                     ->icon('heroicon-o-printer')
                     ->tooltip('Imprimir recibo')
                     ->url(fn ($record) => route('ventas.recibo', $record))
+                    ->visible(fn($record )=> $record->estatus === 'aprobada')
                     ->openUrlInNewTab()
             ])
             ->bulkActions([

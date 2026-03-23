@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Ventas\Tables;
 
+use App\Services\GenerarReciboVentaService;
 use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
@@ -124,7 +125,7 @@ class VentasTable
                     ->label('Fraccionamiento')
                     ->icon('heroicon-o-building-office')
                     ->color('gray')
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->toggleable(isToggledHiddenByDefault: false),
 
                 // Corrección: Usar ventaLotes en lugar de lotes directamente
                 TextColumn::make('lotes_count')
@@ -140,7 +141,7 @@ class VentasTable
                     ->label('Vendedor')
                     ->icon('heroicon-o-user')
                     ->color('info')
-                    ->toggleable(isToggledHiddenByDefault: false),
+                    ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
                 SelectFilter::make('estatus')
@@ -202,6 +203,12 @@ class VentasTable
                     ->icon('heroicon-o-pencil-square')
                     ->color('warning')
                     ->tooltip('Editar venta'),
+                Action::make('recibo')
+                    ->iconButton()
+                    ->icon('heroicon-o-printer')
+                    ->tooltip('Imprimir recibo')
+                    ->url(fn ($record) => route('ventas.recibo', $record))
+                    ->openUrlInNewTab()
             ])
             ->bulkActions([
                 BulkActionGroup::make([
